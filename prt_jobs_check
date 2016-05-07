@@ -1,4 +1,4 @@
-#!/usr/local/bin/ruby
+#!/usr/local/bin/env ruby
 
 require 'rubygems'
 require 'net/ssh'
@@ -24,7 +24,6 @@ class PrintJobs
         else
           res = info.split("\n").reject {|line| line.match(/\s+Time.now/)}.join("\n")
           puts res
-          #write_data
           print "Process into kill que: "
           input = STDIN.gets.chomp.upcase
           if input == "YES"
@@ -45,18 +44,16 @@ class PrintJobs
     end
 
     def kill_jobs(ssh, task_id)
-      #execute = Net::SSH.start(HOST, USERNAME, :password => PASSWORD)
       id_to_strip = task_id.gsub(/\-/," ")
       column = 1
       stripping_id = id_to_strip.lines.map { |task| task.split(/\s+/)[1] }.each do |id|
         id.strip!
         puts "Cancelling job: #{id}"
-        #`sudo cancel #{id}`
         ssh.exec!("sudo cancel #{id}")
       end
     end
   end
 end
 
-  killer = PrintJobs.new
-  killer.scan_for_jobs
+killer = PrintJobs.new
+killer.scan_for_jobs
